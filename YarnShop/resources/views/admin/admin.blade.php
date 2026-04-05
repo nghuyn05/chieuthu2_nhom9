@@ -1,0 +1,273 @@
+@extends('layout/admin')
+@section('body')
+ <div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/admin">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">My Dashboard</li>
+    </ol>
+    <!-- Icon Cards-->
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-primary o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-comments"></i>
+                    </div>
+                    <div class="mr-5">26 New Messages!</div>
+                </div>
+                <a class="card-footer text-white clearfix small z-1" href="#">
+                    <span class="float-left">View Details</span>
+                    <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-warning o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-list"></i>
+                    </div>
+                    <div class="mr-5">11 New Tasks!</div>
+                </div>
+                <a class="card-footer text-white clearfix small z-1" href="#">
+                    <span class="float-left">View Details</span>
+                    <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-success o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-shopping-cart"></i>
+                    </div>
+                    <div class="mr-5">123 New Orders!</div>
+                </div>
+                <a class="card-footer text-white clearfix small z-1" href="#">
+                    <span class="float-left">View Details</span>
+                    <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-danger o-hidden h-100">
+                <div class="card-body">
+                    <div class="card-body-icon">
+                        <i class="fa fa-fw fa-support"></i>
+                    </div>
+                    <div class="mr-5">13 New Tickets!</div>
+                </div>
+                <a class="card-footer text-white clearfix small z-1" href="#">
+                    <span class="float-left">View Details</span>
+                    <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Area Chart Example-->
+            <!-- Card Columns Example Social Feed-->
+            <div class="mb-0 mt-4">
+                <i class="fa fa-newspaper-o"></i> News Feed</div>
+            <hr class="mt-2">
+            <div class="card-columns">
+                <!-- Example Social Card-->
+                <div class="card mb-3">
+                    <a href="#">
+                        <img class="card-img-top img-fluid w-100" src="/images/milk bò.jpg" alt="">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><a href="#">David Miller</a></h6>
+                        <p class="card-text small">Wool blanket, beautiful color, wonderful!
+                            <a href="#">#surfsup</a>
+                        </p>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body py-2 small">
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-thumbs-up"></i>Like</a>
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-comment"></i>Comment</a>
+                        <a class="d-inline-block" href="#">
+                            <i class="fa fa-fw fa-share"></i>Share</a>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body small bg-faded">
+                        <div class="media">
+                            <img class="d-flex mr-3" src="http://placehold.it/45x45" alt="">
+                            <div class="media-body">
+                                <h6 class="mt-0 mb-1"><a href="#">John Smith</a></h6>Yes, but the yarn is a bit thin.
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <a href="#">Like</a>
+                                    </li>
+                                    <li class="list-inline-item">·</li>
+                                    <li class="list-inline-item">
+                                        <a href="#">Reply</a>
+                                    </li>
+                                </ul>
+                                <div class="media mt-3">
+                                    <a class="d-flex pr-3" href="#">
+                                        <img src="http://placehold.it/45x45" alt="">
+                                    </a>
+                                    <div class="media-body">
+                                        <h6 class="mt-0 mb-1"><a href="#">David Miller</a></h6>You get what you pay for!
+                                        <ul class="list-inline mb-0">
+                                            <li class="list-inline-item">
+                                                <a href="#">Like</a>
+                                            </li>
+                                            <li class="list-inline-item">·</li>
+                                            <li class="list-inline-item">
+                                                <a href="#">Reply</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Posted 32 mins ago</div>
+                </div>
+                <!-- Example Social Card-->
+                <div class="card mb-3">
+                    <a href="#">
+                        <img class="card-img-top img-fluid w-100" src="/images/Len Lông Thỏ 100g.jpg" alt="">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><a href="#">John Smith</a></h6>
+                        <p class="card-text small">Omg, this yarn is as smooth as cotton!!
+                            <a href="#">#workinghardorhardlyworking</a>
+                        </p>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body py-2 small">
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-thumbs-up"></i>Like</a>
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-comment"></i>Comment</a>
+                        <a class="d-inline-block" href="#">
+                            <i class="fa fa-fw fa-share"></i>Share</a>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body small bg-faded">
+                        <div class="media">
+                            <img class="d-flex mr-3" src="http://placehold.it/45x45" alt="">
+                            <div class="media-body">
+                                <h6 class="mt-0 mb-1"><a href="#">Jessy Lucas</a></h6>Really, I want to try it too!
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <a href="#">Like</a>
+                                    </li>
+                                    <li class="list-inline-item">·</li>
+                                    <li class="list-inline-item">
+                                        <a href="#">Reply</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Posted 46 mins ago</div>
+                </div>
+                <!-- Example Social Card-->
+                <div class="card mb-3">
+                    <a href="#">
+                        <img class="card-img-top img-fluid w-100" src="/images/nhung gấu 3mm.jpg" alt="">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><a href="#">Jeffery Wellings</a></h6>
+                        <p class="card-text small">This yarn is very beautiful for crocheting animals, sisters!
+                            <a href="#">#kickflip</a>
+                            <a href="#">#holdmybeer</a>
+                            <a href="#">#igotthis</a>
+                        </p>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body py-2 small">
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-thumbs-up"></i>Like</a>
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-comment"></i>Comment</a>
+                        <a class="d-inline-block" href="#">
+                            <i class="fa fa-fw fa-share"></i>Share</a>
+                    </div>
+                    <div class="card-footer small text-muted">Posted 1 hr ago</div>
+                </div>
+                <!-- Example Social Card-->
+                <div class="card mb-3">
+                    <a href="#">
+                        <img class="card-img-top img-fluid w-100" src="/images/nhung đũa.jpg" alt="">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><a href="#">David Miller</a></h6>
+                        <p class="card-text small">Oh, this yarn is so big and soft, it's perfect for crocheting teddy bears.
+                            <a href="#">#desert</a>
+                            <a href="#">#water</a>
+                            <a href="#">#anyonehavesomewater</a>
+                            <a href="#">#noreally</a>
+                            <a href="#">#thirsty</a>
+                            <a href="#">#dehydration</a>
+                        </p>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body py-2 small">
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-thumbs-up"></i>Like</a>
+                        <a class="mr-3 d-inline-block" href="#">
+                            <i class="fa fa-fw fa-comment"></i>Comment</a>
+                        <a class="d-inline-block" href="#">
+                            <i class="fa fa-fw fa-share"></i>Share</a>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body small bg-faded">
+                        <div class="media">
+                            <img class="d-flex mr-3" src="http://placehold.it/45x45" alt="">
+                            <div class="media-body">
+                                <h6 class="mt-0 mb-1"><a href="#">John Smith</a></h6>Ohh, have you tried it?
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <a href="#">Like</a>
+                                    </li>
+                                    <li class="list-inline-item">·</li>
+                                    <li class="list-inline-item">
+                                        <a href="#">Reply</a>
+                                    </li>
+                                </ul>
+                                <div class="media mt-3">
+                                    <a class="d-flex pr-3" href="#">
+                                        <img src="http://placehold.it/45x45" alt="">
+                                    </a>
+                                    <div class="media-body">
+                                        <h6 class="mt-0 mb-1"><a href="#">David Miller</a></h6>
+                                        <img class="img-fluid w-100 mb-1" src="/images/sản phẩm từ len nhung đũa.jpg" alt="">Yes, this is my finished product.
+                                        <ul class="list-inline mb-0">
+                                            <li class="list-inline-item">
+                                                <a href="#">Like</a>s
+                                            </li>
+                                            <li class="list-inline-item">·</li>
+                                            <li class="list-inline-item">
+                                                <a href="#">Reply</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer small text-muted">Posted yesterday</div>
+                </div>
+            </div>
+            <!-- /Card Columns-->
+        </div>
+    </div>
+</div>
+@endsection
