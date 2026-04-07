@@ -13,8 +13,6 @@
       <link rel="shortcut icon" href="images/favicon.png" type="">
       <title>Yarn shop</title>
       <!-- bootstrap core css -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-      <!-- bootstrap core css -->
       <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
       <!-- font awesome style -->
       <link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" />
@@ -22,9 +20,6 @@
       <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
       <!-- responsive style -->
       <link href="{{ asset('css/responsive.css') }}" rel="stylesheet" />
-      <!--Icon Contact -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-      
    </head>
 <body>
 
@@ -50,6 +45,14 @@
                      class="form-control border-0 bg-transparent"
                      placeholder="Tìm sản phẩm..."
                >
+
+               <!-- select -->
+               <select class="form-control border-0 bg-transparent" style="max-width: 180px;">
+                     <option>Tất cả</option>
+                     @foreach($categories as $c)
+                        <option>{{ $c->name }}</option>
+                     @endforeach
+               </select>
 
                <!-- icon search -->
                <button type="button" class="btn btn-pink" onclick="handleSearch()">
@@ -78,46 +81,6 @@
             <a href="{{ route('cart.index') }}" class="ml-3">
                 <i class="fa fa-shopping-cart"></i>
             </a>
-
-            <!-- Reply Notification -->
-            <div class="reply-wrapper d-inline-block position-relative ml-3">
-               <a href="javascript:void(0)" id="admin-reply-btn" class="reply-icon">
-                  <i class="bi bi-envelope-heart-fill"></i>
-
-                  @if($replyCount > 0)
-                     <span class="reply-badge">{{ $replyCount }}</span>
-                  @endif
-               </a>
-
-               <div id="admin-reply-box" class="reply-dropdown">
-                  <div class="reply-header">
-                     <span>📩 Phản hồi từ Admin</span>
-                     <small>{{ $replyCount }} phản hồi</small>
-                  </div>
-
-                  @forelse($replies as $reply)
-                     <div class="reply-item">
-                        <div class="reply-avatar">A</div>
-                        <div class="reply-content">
-                           <strong>{{ $reply->subject }}</strong>
-                           <p>{{ Str::limit($reply->reply, 60) }}</p>
-                           <small>
-                              {{ \Carbon\Carbon::parse($reply->replied_at)->diffForHumans() }}
-                           </small>
-                        </div>
-                     </div>
-                  @empty
-                     <div class="p-3 text-center text-muted">
-                        Chưa có phản hồi nào
-                     </div>
-                  @endforelse
-
-                  <div class="reply-footer">
-                     <a href="{{ route('home.reply') }}">Xem phản hồi</a>
-                  </div>
-               </div>
-            </div>
-
         </div>
 
     </div>
@@ -151,7 +114,7 @@
             <ul class="menu-right">
                 <li><a href="/">Trang chủ</a></li>
                 <li><a href="/product">Sản phẩm</a></li>
-                <li><a href="{{ route('contact') }}">Liên hệ</a></li>
+                <li><a href="/contact">Liên hệ</a></li>
             </ul>
         </div>
     </div>
@@ -209,9 +172,9 @@
                         <h3>Menu</h3>
                         <ul>
                            <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                           <li><a href="{{ route('about') }}">Giới thiệu</a></li>
+                           <li><a href="{{ route('product',1) }}">Sản phẩm</a></li>
                            <li><a href="{{ route('category_product',1) }}">Danh mục sản phẩm</a></li>
-                           <li><a href="{{ route('product',1) }}">Sản phẩm</a></li>                           
-                           <li><a href="{{ route('contact') }}">Liên hệ</a></li>
                         </ul>
                      </div>
                   </div>
@@ -314,19 +277,6 @@
             }
          });
          
-
-         // reply
-         document.getElementById("admin-reply-btn").onclick = function() {
-            let box = document.getElementById("admin-reply-box");
-            box.style.display = (box.style.display === "block") ? "none" : "block";
-         };
-
-         // click ngoài thì đóng
-         document.addEventListener("click", function(e){
-            if(!e.target.closest(".reply-wrapper")){
-               document.getElementById("admin-reply-box").style.display = "none";
-            }
-         });
-</script>
+         </script>
 </body>
 </html>

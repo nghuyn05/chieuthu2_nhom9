@@ -160,8 +160,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}">
-                    <i class="fa fa-fw fa-sign-out"></i>{{ __('Logout') }}
-                </a>
+                    <i class="fa fa-fw fa-sign-out"></i>{{ __('Logout') }}</a>
             </li>
         </ul>
     </div>
@@ -193,12 +192,9 @@
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
 
                     <a class="btn btn-primary" href="{{ route('logout') }}"> {{ __('Logout') }}>Logout
-                        Logout
                     </a>
                 </div>
             </div>

@@ -1,18 +1,17 @@
 @extends('layout/home')
 @section('body')
-<!-- inner page section -->
+
 <section class="inner_page_head">
     <div class="container_fuild">
         <div class="row">
             <div class="col-md-12">
                 <div class="full">
-                    <h3>Liên hệ</h3>
+                    <h3>{{ $contact->title ?? 'Contact us' }}</h3>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- end inner page section -->
 
 <section class="why_section layout_padding">
     <div class="container">
@@ -27,22 +26,20 @@
             </div>
         @endif
 
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-
-                <div class="card shadow-lg border-0 rounded-4 p-4">
-                    <h5 class="text-center mb-4 fw-bold">Gửi liên hệ cho chúng tôi</h5> {{-- ✅ SỬA --}}
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="full">
 
                     {{-- Thông báo --}}
                     @if(session('success'))
-                        <div class="alert alert-success text-center">
+                        <div class="alert alert-success">
                             {{ session('success') }}
                         </div>
                     @endif
 
                     @if ($errors->any())
                         <div class="alert alert-danger">
-                            <ul class="mb-0">
+                            <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -50,57 +47,22 @@
                         </div>
                     @endif
 
-                    {{-- FORM --}}
+                    {{-- FORM GIỮ NGUYÊN --}}
                     <form action="{{ route('contact.submit') }}" method="POST">
                         @csrf
-
-                        <div class="mb-3">
-                            <label class="form-label">Họ và tên</label> {{-- ✅ SỬA --}}
-                            <input type="text" 
-                                   name="name" 
-                                   class="form-control rounded-3" 
-                                   placeholder="Nhập họ và tên"
-                                   value="{{ old('name') }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" 
-                                   name="email" 
-                                   class="form-control rounded-3" 
-                                   placeholder="Nhập email"
-                                   value="{{ old('email') }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tiêu đề</label> {{-- ✅ SỬA --}}
-                            <input type="text" 
-                                   name="subject" 
-                                   class="form-control rounded-3" 
-                                   placeholder="Nhập tiêu đề"
-                                   value="{{ old('subject') }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Nội dung</label> {{-- ✅ SỬA --}}
-                            <textarea name="message" 
-                                      class="form-control rounded-3" 
-                                      rows="4"
-                                      placeholder="Nhập nội dung" required>{{ old('message') }}</textarea>
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-dark rounded-3 py-2 px-4">
-                                Gửi liên hệ
-                            </button>
-                        </div>
+                        <fieldset>
+                            <input type="text" name="name" placeholder="Enter your full name" required>
+                            <input type="email" name="email" placeholder="Enter your email address" required>
+                            <input type="text" name="subject" placeholder="Enter subject" required>
+                            <textarea name="message" placeholder="Enter your message" required></textarea>
+                            <input type="submit" value="Submit">
+                        </fieldset>
                     </form>
-                </div>
 
+                </div>
             </div>
         </div>
 
-        {{-- INFO --}}
         <div class="row mt-5">
             <div class="col-md-4 text-center">
                 <h6 class="fw-bold">Address</h6>
@@ -124,7 +86,6 @@
                 </p>
             </div>
         </div>
-
     </div>
 </section>
 
