@@ -13,6 +13,8 @@
       <link rel="shortcut icon" href="images/favicon.png" type="">
       <title>Yarn shop</title>
       <!-- bootstrap core css -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- bootstrap core css -->
       <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
       <!-- font awesome style -->
       <link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" />

@@ -1,64 +1,65 @@
 @extends('layout.home')
 
 @section('body')
-<section class="inner_page_head">
-    <div class="container_fuild">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="full">
-                    <h3>All Category</h3>
+
+<div class="container mt-4">
+    <div class="row">
+
+        @forelse($products as $object)
+
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card h-100 shadow-sm">
+
+                    <img src="{{ $object->image }}"
+                        class="card-img-top"
+                        style="height:220px;object-fit:cover"
+                        alt="{{ $object->name }}">
+
+                    <div class="card-body d-flex flex-column">
+
+                        <h5 class="card-title text-center fw-bold">
+                            {{ $object->name }}
+                        </h5>
+
+                        <p class="card-text text-muted small text-center">
+                            {{ Str::limit($object->description,80) }}
+                        </p>
+
+                        <div class="text-center mb-3">
+
+                            <span class="badge border border-success text-success px-3 py-2 mb-2">
+                                Còn {{ $object->stock }} sản phẩm
+                            </span>
+
+                            <br>
+
+                            <span class="badge border border-primary text-primary px-3 py-2">
+                                {{ number_format($object->price) }} VNĐ
+                            </span>
+
+                        </div>
+
+                        <div class="mt-auto text-center">
+                            <a href="{{ route('single_product',$object->id) }}"
+                               class="btn btn-primary">
+                                Detail Product
+                            </a>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
-        </div>
-    </div>
-</section>
 
-<div class="container my-4">
-    <div class="row" id="product-list">
-        <!-- API render -->
+        @empty
+
+            <div class="col-12 text-center">
+                <h4>Không có sản phẩm</h4>
+            </div>
+
+        @endforelse
+
     </div>
 </div>
 
-<script>
-fetch('http://127.0.0.1:8000/api/category/1')
-    .then(res => res.json())
-    .then(data => {
-        let html = '';
-
-        data.data.forEach(p => {
-            html += `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="${p.image}" class="card-img-top img-fluid" style="height:220px; object-fit:cover;">
-
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-center fw-bold">${p.name}</h5>
-
-                            <p class="card-text text-muted small text-center product-desc">
-                                ${p.description ?? ''}
-                            </p>
-
-                            <p class="text-center mb-3 product-badges">
-                                <span class="badge border border-success text-success px-3 py-2">
-                                    Còn ${p.stock} sản phẩm
-                                </span>
-                                <span class="badge border border-success text-success px-3 py-2">
-                                    ${Number(p.price).toLocaleString()} VNĐ
-                                </span>
-                            </p>
-
-                            <div class="mt-auto text-center">
-                                <a href="/product/${p.id}" class="btn btn-secondary px-3">
-                                    Detail Product
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                `;
-        });
-
-        document.getElementById('product-list').innerHTML = html;
-    });
-</script>
 @endsection
