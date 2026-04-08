@@ -17,6 +17,9 @@ use App\Http\Controllers\HomeController;
 use Dom\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+
 
 Route::get('/', [App\Http\Controllers\HomeController::class,'index'])->name('home');
 
@@ -30,8 +33,21 @@ Route::get('/search', [HomeController::class, 'search'])->name('product.search')
 Route::get('/category_product/{category}', [App\Http\Controllers\HomeController::class,'category_product'])->name('category_product');
 Route::get('/category_product/single_product/{category}', [App\Http\Controllers\HomeController::class,'single_product'])->name('single_product');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
+
+
+// ===== ✅ CONTACT (ĐÃ SỬA) =====
+
+// Route form contact
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+
+// Route xử lý gửi contact
 Route::post('/contact', [HomeController::class, 'contactSubmit'])->name('contact.submit');
+
+//Route cho user xem phản hồi
+Route::get('/home/reply', [HomeController::class, 'myContact'])->name('home.reply');
+// ===============================================
+
+
 Route::get('/product', [App\Http\Controllers\HomeController::class,'product'])->name('product');
 Route::get('/product/{id}', [App\Http\Controllers\HomeController::class,'single_product'])->name('product.show');
 Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
@@ -45,10 +61,8 @@ Route::post('/checkout', [HomeController::class, 'processCheckout'])->name('chec
 Route::get('/my-order/{id}', [HomeController::class, 'myOrder'])->name('order.view');
 
 
-
-////admin
-
-Route::group(['prefix' => 'admin', 'as' => 'admin.'],function(){
+// ADMIN
+Route::group(['prefix' => 'admin', 'as' => 'admin.','middleware' => 'auth'],function(){
     Route::resource('dashboard', AdminController::class);
     Route::resource('category',CategoryController::class);
     Route::resource('products_management',ProductController::class);
@@ -63,14 +77,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'],function(){
     Route::get('contact/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
     Route::post('contact/{id}/reply', [ContactController::class, 'sendReply'])->name('contact.sendReply');
 });
+
 Route::get('/admin', action: function () {
     return view('admin.admin');
 })->name('admin');
 Auth::routes();
 
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect('/');
+    return redirect('/admin');
 });
+
+// ✅ FIX: xóa route trùng + chỉ giữ 1 cái
+Route::get('/my-contact', [HomeController::class, 'myContact'])
+    ->middleware('auth')
+    ->name('user.contact');

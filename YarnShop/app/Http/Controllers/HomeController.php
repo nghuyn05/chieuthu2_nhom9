@@ -28,7 +28,6 @@ class HomeController extends Controller
        view()->share(['categories'=>$categories]);
     
     }
-    
     /**
      * Show the application dashboard.
      *
@@ -38,7 +37,8 @@ class HomeController extends Controller
     {
         $categories = Category::where('status',1)->get();
         $products = Product::where('status',1)->get();
-        return view('home.index',compact("categories","products"));
+
+    return view('home.index', compact("categories","products",));
     }
     public function showLogin()
     {
@@ -69,6 +69,45 @@ class HomeController extends Controller
         return redirect('/')->with('success','Đăng nhập thành công');
     }
 
+    public function loginApiGet(Request $request)
+    {
+        $email = $request->query('email');
+        $password = $request->query('password');
+
+        if (!$email || !$password) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Thiếu email hoặc password'
+            ], 400);
+        }
+
+        $customer = Customer::where('email', $email)->first();
+
+        if (!$customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email không tồn tại'
+            ], 404);
+        }
+
+        if ($password !== $customer->password) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mật khẩu không đúng'
+            ], 401);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đăng nhập thành công',
+            'data' => [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+            ]
+        ]);
+    }
+
     public function logoutUser()
     {
         session()->forget('customer');
@@ -90,7 +129,6 @@ class HomeController extends Controller
         Customer::create([
             'name' => $request->name,
             'email' => $request->email,
-            // ❗ ĐỒ ÁN: chưa hash cũng được
             'password' => $request->password,
             'status' => 1,
         ]);
@@ -99,6 +137,41 @@ class HomeController extends Controller
             ->with('success','Đăng ký thành công! Vui lòng đăng nhập');
     }
 
+    public function registerApiGet(Request $request)
+    {
+        $name = $request->query('name');
+        $email = $request->query('email');
+        $password = $request->query('password');
+        $phone = $request->query('phone');
+
+        if (!$name || !$email || !$password) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Thiếu dữ liệu'
+            ], 400);
+        }
+
+        // check email tồn tại
+        if (Customer::where('email', $email)->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email đã tồn tại'
+            ], 409);
+        }
+
+        $customer = Customer::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'phone' => $phone,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đăng ký thành công',
+            'data' => $customer
+        ]);
+    }
     public function logout()
     {
         if (Auth::check()) {
@@ -160,18 +233,34 @@ class HomeController extends Controller
     }
 
     public function contactSubmit(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email',
-        'subject' => 'required',
-        'message' => 'required',
-    ]);
+    {
+        $customer = session('customer');
 
-    Contact::create($request->all());
+        if (!$customer || !isset($customer['id'])) {
+            return redirect()->route('user.login.form')
+                ->with('error', 'Bạn cần đăng nhập để gửi liên hệ!');
+        }
 
-    return back()->with('success', 'Gửi liên hệ thành công!');
-}
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'subject' => 'required',
+            'message' => 'required',
+        ]);
+
+        Contact::create([
+            'name' => $request->name,
+            'email' => strtolower($request->email),
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'status' => 0,
+            'customer_id' => $customer['id'], // chắc chắn không null
+        ]);
+
+        return back()->with('success', 'Gửi liên hệ thành công!');
+    }
+    
+
     public function addToCart(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -216,10 +305,10 @@ class HomeController extends Controller
         if(isset($cart[$id])){
             $cart[$id]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
-            return back()->with('success', 'Cart updated!');
+            return back()->with('success', 'Cập nhật giỏ hàng thành công!');
         }
 
-        return back()->with('error', 'Product not found in cart!');
+        return back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng!');
     }
 
     // Remove sản phẩm khỏi giỏ hàng
@@ -230,7 +319,7 @@ class HomeController extends Controller
         if(isset($cart[$id])){
             unset($cart[$id]);
             session()->put('cart', $cart);
-            return back()->with('success', 'Product removed!');
+            return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
         }
 
         return back()->with('error', 'Product not found in cart!');
@@ -356,4 +445,76 @@ public function apiCategory()
         'data' => $categories
     ]);
 }
+
+
+    // 🔹 Xem phản hồi của user
+    public function myContact()
+    {
+        // ❗ Bạn đang dùng session('customer') chứ KHÔNG phải Auth
+
+        if (!session()->has('customer')) {
+            return redirect()->route('user.login.form')
+                ->with('error', 'Bạn cần đăng nhập!');
+        }
+
+        $customer = session('customer');
+
+        $contacts = Contact::where('customer_id', $customer['id'])
+            ->whereNotNull('reply') // reply
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('home.reply', compact('contacts'));
+    }
+
+    public function apiSubmitContact(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        // Lấy customer_id từ session
+        $customer = session('customer');
+
+        $contact = Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'status' => 0, // chưa đọc
+            'customer_id' => $customer['id'] ?? null, // nếu chưa login vẫn null
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Liên hệ của bạn đã gửi thành công!',
+            'data' => $contact
+        ], 201);
+    }
+
+    // 🔹 Lấy danh sách phản hồi admin cho user hiện tại (API)
+    public function apiGetReplies(Request $request)
+    {
+        $customer_id = $request->input('customer_id');
+
+        if (!$customer_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Vui lòng gửi customer_id!'
+            ], 401);
+        }
+
+        $contacts = Contact::where('customer_id', $customer_id)
+            ->whereNotNull('reply')
+            ->orderBy('replied_at', 'desc')
+            ->get(['subject','message','reply','replied_at']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $contacts
+        ]);
+    }
 }
