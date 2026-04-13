@@ -7,8 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     protected $table = 'carts';
-    protected $fillable = ['id','customer_id'];
-    public function customer(){
-        return $this->belongsTo(Customer::class,'customer_id');
+
+    protected $fillable = [
+        'customer_id',
+        'customer_name',
+        'product_id',
+        'product_name',
+        'price',
+        'quantity'
+    ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

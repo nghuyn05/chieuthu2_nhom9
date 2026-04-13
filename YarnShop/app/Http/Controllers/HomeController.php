@@ -46,28 +46,34 @@ class HomeController extends Controller
     }
 
     public function loginUser(Request $request)
-    {
-        $customer = Customer::where('email', $request->email)->first();
+{
+    $admin = \App\Models\Admin::where('email', $request->email)->first();
 
-        if(!$customer){
-            return back()->with('error','Email không tồn tại');
+    if ($admin) {
+        if (\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
+            Auth::guard('admin')->login($admin);
+            return redirect('/admin')->with('success', 'Chào mừng Admin!');
         }
-
-        // So sánh password thường (vì DB chưa hash)
-        if($request->password !== $customer->password){
-            return back()->with('error','Mật khẩu không đúng');
-        }
-
-        session([
-            'customer' => [
-                'id' => $customer->id,
-                'name' => $customer->name,
-                'email' => $customer->email,
-            ]
-        ]);
-
-        return redirect('/')->with('success','Đăng nhập thành công');
     }
+
+    $customer = \App\Models\Customer::where('email', $request->email)->first();
+
+    if ($customer) {
+        if ($request->password === $customer->password) {
+            session([
+                'customer' => [
+                    'id' => $customer->id,
+                    'name' => $customer->name,
+                    'email' => $customer->email,
+                ]
+            ]);
+
+            return redirect('/')->with('success', 'Đăng nhập khách hàng thành công!');
+        }
+    }
+
+    return back()->with('error', 'Email hoặc mật khẩu không chính xác');
+}
 
     public function loginApiGet(Request $request)
     {
@@ -120,6 +126,9 @@ class HomeController extends Controller
     }
     public function registerUser(Request $request)
     {
+        if ($request->email === 'admin@gmail.com') {
+            return back()->withErrors(['email' => 'Email này thuộc Admin, không thể đăng ký tại đây!']);
+        }
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:customers,email',
@@ -176,7 +185,7 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
             Auth::logout();
-            return redirect('/');
+            return redirect('/product');
         }
     }
     // public function product()
@@ -263,66 +272,67 @@ class HomeController extends Controller
 
     public function addToCart(Request $request, $id)
     {
+        $customer = session('customer');
+
+        if (!$customer) {
+            return redirect()->route('user.login.form');
+        }
+
         $product = Product::findOrFail($id);
-        $cart = Session::get('cart', []);
+        $quantity = $request->quantity ?? 1;
 
-        $quantity = $request->quantity ? (int)$request->quantity : 1;
+        $cart = Cart::where('customer_id', $customer['id'])
+            ->where('product_id', $id)
+            ->first();
 
-        if ($quantity > $product->stock) {
-            return back()->with('error', 'Số lượng vượt quá tồn kho!');
-        }
-
-        if(isset($cart[$id])){
-            $cart[$id]['quantity'] += $quantity;
-
-            // ❌ tổng cũng không được vượt stock
-            if ($cart[$id]['quantity'] > $product->stock) 
-            {
-                $cart[$id]['quantity'] = $product->stock;
-            }
+        if ($cart) {
+            $cart->quantity += $quantity;
+            $cart->save();
         } else {
-            $cart[$id] = [
-                "id" => $product->id,
-                "name" => $product->name,
-                "quantity" => $quantity,
-                "price" => $product->price,
-                "image" => $product->image
-            ];
+            Cart::create([
+                'customer_id' => $customer['id'],
+                'customer_name' => $customer['name'],
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'price' => $product->price,
+                'quantity' => $quantity,
+                'image' => $product->image,
+                
+            ]);
         }
 
-        Session::put('cart', $cart);
-        return redirect()->back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công!');
+        return back()->with('success', 'Thêm vào giỏ hàng thành công!');
     }
     public function cart()
     {
-        return view('home.cart');
+        $customer = session('customer');
+
+        if (!$customer) {
+            return redirect()->route('user.login.form');
+        }
+
+        $cartItems = Cart::where('customer_id', $customer['id'])->get();
+
+        return view('home.cart', compact('cartItems'));
     }
 
     public function updateCart(Request $request, $id)
     {
-        $cart = session()->get('cart', []);
+        $cart = Cart::findOrFail($id);
 
-        if(isset($cart[$id])){
-            $cart[$id]['quantity'] = $request->quantity;
-            session()->put('cart', $cart);
-            return back()->with('success', 'Cập nhật giỏ hàng thành công!');
-        }
+        $cart->quantity = $request->quantity;
+        $cart->save();
 
-        return back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng!');
+        return back()->with('success', 'Cập nhật giỏ hàng thành công!');
     }
 
     // Remove sản phẩm khỏi giỏ hàng
     public function removeFromCart($id)
     {
-        $cart = session()->get('cart', []);
+        $cart = Cart::findOrFail($id);
+        $cart->delete();
 
-        if(isset($cart[$id])){
-            unset($cart[$id]);
-            session()->put('cart', $cart);
-            return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
-        }
-
-        return back()->with('error', 'Product not found in cart!');
+        return back()->with('success', 'Đã xóa sản phẩm!');
     }
     public function checkout()
     {

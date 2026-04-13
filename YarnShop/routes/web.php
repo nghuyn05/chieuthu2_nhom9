@@ -62,7 +62,7 @@ Route::get('/my-order/{id}', [HomeController::class, 'myOrder'])->name('order.vi
 
 
 // ADMIN
-Route::group(['prefix' => 'admin', 'as' => 'admin.','middleware' => 'auth'],function(){
+Route::group(['prefix' => 'admin', 'as' => 'admin.','middleware' => 'auth:admin'],function(){
     Route::resource('dashboard', AdminController::class);
     Route::resource('category',CategoryController::class);
     Route::resource('products_management',ProductController::class);
@@ -76,17 +76,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.','middleware' => 'auth'],func
     Route::resource('contact',ContactController::class);
     Route::get('contact/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
     Route::post('contact/{id}/reply', [ContactController::class, 'sendReply'])->name('contact.sendReply');
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+   
 });
-
-Route::get('/admin', action: function () {
-    return view('admin.admin');
-})->name('admin');
 Auth::routes();
 
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect('/admin');
-});
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/')->with('success', 'Đã đăng xuất admin');
+})->name('logout');
 
 // ✅ FIX: xóa route trùng + chỉ giữ 1 cái
 Route::get('/my-contact', [HomeController::class, 'myContact'])

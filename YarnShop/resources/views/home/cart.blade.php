@@ -1,6 +1,7 @@
 @extends('layout.home')
+
 @section('body')
-<!-- inner page section -->
+
 <section class="inner_page_head">
     <div class="container_fuild">
         <div class="row">
@@ -12,14 +13,40 @@
         </div>
     </div>
 </section>
-<!-- end inner page section -->
-<!-- Cart Section -->
+
+<style>
+    .cart_section {
+        background: #f8f9fa;
+    }
+
+    .cart_table img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .cart_table input {
+        width: 70px;
+        text-align: center;
+    }
+
+    .cart-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+
 <section class="cart_section py-5">
     <div class="container">
-        @if(session('cart') && count(session('cart')) > 0)
+
+        @if($cartItems && count($cartItems) > 0)
+
             <div class="table-responsive">
-                <table class="table table-bordered text-center">
-                    <thead class="thead-light">
+                <table class="table table-bordered text-center cart_table">
+                    <thead class="thead-dark">
                         <tr>
                             <th>Image</th>
                             <th>Product Name</th>
@@ -29,49 +56,75 @@
                             <th>Action</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @php $total = 0; @endphp
-                        @foreach(session('cart') as $id => $product)
-                            @php $subtotal = $product['price'] * $product['quantity']; @endphp
-                            @php $total += $subtotal; @endphp
+
+                        @foreach($cartItems as $item)
+
+                            @php
+                                $subtotal = $item->price * $item->quantity;
+                                $total += $subtotal;
+                            @endphp
+
                             <tr>
                                 <td>
-                                    <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" width="80">
+                                    <img src="{{ asset($item->image) }}" width="60">
                                 </td>
-                                <td>{{ $product['name'] }}</td>
-                                <td>{{ number_format($product['price']) }} VNĐ</td>
+
+                                <td>{{ $item->product_name }}</td>
+
+                                <td>{{ number_format($item->price) }} VNĐ</td>
+
                                 <td>
-                                    <form action="{{ route('cart.update', $id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('cart.update', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
-                                        <input type="number" name="quantity" value="{{ $product['quantity'] }}" min="1" class="form-control d-inline" style="width:70px;">
-                                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+
+                                        <input type="number" name="quantity"
+                                               value="{{ $item->quantity }}" min="1">
+
+                                        <button class="btn btn-primary btn-sm mt-1">Update</button>
                                     </form>
                                 </td>
+
                                 <td>{{ number_format($subtotal) }} VNĐ</td>
+
                                 <td>
-                                    <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                    <form action="{{ route('cart.remove', $item->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                        <button class="btn btn-danger btn-sm">Remove</button>
                                     </form>
                                 </td>
                             </tr>
+
                         @endforeach
+
                         <tr>
-                            <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                            <td colspan="4"><strong>Total</strong></td>
                             <td colspan="2"><strong>{{ number_format($total) }} VNĐ</strong></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('product') }}" class="btn btn-secondary">Continue Shopping</a>
-                <a href="{{ route('checkout') }}" class="btn btn-success">Proceed to Checkout</a>
+
+            {{-- FIX BUTTONS (BẠN BỊ MẤT CÁI NÀY) --}}
+            <div class="cart-actions">
+                <a href="{{ route('product') }}" class="btn btn-secondary">
+                    Continue Shopping
+                </a>
+
+                <a href="{{ route('checkout') }}" class="btn btn-success">
+                    Proceed to Checkout
+                </a>
             </div>
+
         @else
-            <p class="text-center">Your cart is empty. <a href="{{ route('product') }}">Shop Now</a></p>
+            <p class="text-center">Cart is empty</p>
         @endif
+
     </div>
 </section>
+
 @endsection

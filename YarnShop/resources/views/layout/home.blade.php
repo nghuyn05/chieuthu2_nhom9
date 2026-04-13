@@ -218,12 +218,17 @@
                   <div class="col-md-6">
                      <div class="widget_menu">
                         <h3>Tài khoản</h3>
-                        <ul>                           
-                           <li><a href="{{ route('user.login') }}">Đăng nhập</a></li>
-                           <li><a href="{{ route('user.register') }}">Đăng ký</a></li>
-                           <li><a href="{{ route('cart.index') }}">Giỏ hàng</a></li>
-                           <li><a href="{{ route('checkout') }}">Thanh Toán</a></li>
-                        </ul>
+                           <ul>
+                              @if(session('customer'))
+                                 <li><a href="{{ route('user.logout') }}">Đăng xuất</a></li>
+                              @else
+                                 <li><a href="{{ route('user.login.form') }}">Đăng nhập</a></li>
+                                 <li><a href="{{ route('user.register.form') }}">Đăng ký</a></li>
+                              @endif
+
+                              <li><a href="{{ route('cart.index') }}">Giỏ hàng</a></li>
+                              <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
+                           </ul>
                      </div>
                   </div>
                      </div>
