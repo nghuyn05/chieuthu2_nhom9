@@ -28,7 +28,7 @@
    </head>
 <body>
 
-<!-- ================= TOPBAR ================= -->
+<!-- =================== TOPBAR =================== -->
 <div class="container-fluid px-5 py-4 d-none d-lg-block">
     <div class="row align-items-center">
 
@@ -123,7 +123,7 @@
     </div>
 </div>
 
-<!-- ================= MENU ================= -->
+<!-- ================== MENU =================== -->
 <div class="container-fluid menu-bar">
     <div class="row align-items-center">
 
@@ -195,8 +195,8 @@
                       </div>
                       <div class="information_f">
                         <p><strong>ADDRESS:</strong> 180 Cao Lỗ , Phường 4 , Quận 8 , TPHCM</p>
-                        <p><strong>TELEPHONE:</strong> +84 866 496 437</p>
-                        <p><strong>EMAIL:</strong> minhngoc1907204@gmail.com</p>
+                        <p><strong>TELEPHONE:</strong> +84 866 497 123</p>
+                        <p><strong>EMAIL:</strong> abc@gmail.com</p>
                       </div>
                    </div>
                </div>
