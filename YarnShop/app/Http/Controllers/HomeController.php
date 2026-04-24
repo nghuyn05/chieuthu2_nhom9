@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\About;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Contact;
@@ -40,40 +39,43 @@ class HomeController extends Controller
 
     return view('home.index', compact("categories","products",));
     }
+
+    //login
     public function showLogin()
     {
         return view('home.login');
     }
 
     public function loginUser(Request $request)
-{
-    $admin = \App\Models\Admin::where('email', $request->email)->first();
+    {
 
-    if ($admin) {
-        if (\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
-            Auth::guard('admin')->login($admin);
-            return redirect('/admin')->with('success', 'Chào mừng Admin!');
+        $admin = \App\Models\Admin::where('email', $request->email)->first();
+
+        if ($admin) {
+            if (\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
+                Auth::guard('admin')->login($admin);
+                return redirect('/admin')->with('success', 'Chào mừng Admin!');
+            }
         }
-    }
 
-    $customer = \App\Models\Customer::where('email', $request->email)->first();
+        $customer = \App\Models\Customer::where('email', $request->email)->first();
 
-    if ($customer) {
-        if ($request->password === $customer->password) {
-            session([
-                'customer' => [
-                    'id' => $customer->id,
-                    'name' => $customer->name,
-                    'email' => $customer->email,
-                ]
-            ]);
+        if ($customer) {
+            if ($request->password === $customer->password) {
+                session([
+                    'customer' => [
+                        'id' => $customer->id,
+                        'name' => $customer->name,
+                        'email' => $customer->email,
+                    ]
+                ]);
 
-            return redirect('/')->with('success', 'Đăng nhập khách hàng thành công!');
+                return redirect('/')->with('success', 'Đăng nhập khách hàng thành công!');
+            }
         }
-    }
 
-    return back()->with('error', 'Email hoặc mật khẩu không chính xác');
-}
+        return back()->with('error', 'Email hoặc mật khẩu không chính xác');
+    }
 
     public function loginApiGet(Request $request)
     {
@@ -120,6 +122,7 @@ class HomeController extends Controller
         return redirect('/')->with('success','Đã đăng xuất');
     }
 
+    //register
     public function showRegister()
     {
         return view('home.register');
@@ -188,11 +191,27 @@ class HomeController extends Controller
             return redirect('/product');
         }
     }
-    // public function product()
-    // {
-    //     $products = Product::where('status',1)->get();
-    //     return view('home.product', compact('products'));
-    // }
+
+    //category
+    public function category_product($id){
+         $products = Product::where([
+             ['category_id','=',$id]
+             ,['status','=','1']
+         ])->get();
+         return view('home.category_product',compact("products","products"));
+    }
+
+    public function apiCategory()
+    {
+        $categories = Category::all();
+
+        return response()->json([
+            'status' => true,
+            'data' => $categories
+        ]);
+    }
+
+    //product
     public function product(Request $request)
     {
         $keyword = $request->keyword;
@@ -205,13 +224,19 @@ class HomeController extends Controller
 
         return view('home.product', compact('products', 'keyword'));
     }
-    public function category_product($id){
-         $products = Product::where([
-             ['category_id','=',$id]
-             ,['status','=','1']
-         ])->get();
-         return view('home.category_product',compact("products","products"));
+    
+        // API lấy sản phẩm theo category 
+    public function apiProductsByCategory($id)
+    {
+        $products = Product::where('category_id', $id)->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $products
+        ]);
     }
+
+    
     public function single_product($id){
         $product = Product::where(
             [
@@ -227,13 +252,8 @@ class HomeController extends Controller
 
         return response()->json($products);
     }
-    public function about()
-    {
-        $about = About::where('status', 1)->first();
 
-        return view('home.about', compact('about'));
-    }
-
+    //contact
     public function contact()
     {
         $contact = Contact::where('status', 1)->first();
@@ -303,7 +323,113 @@ class HomeController extends Controller
 
         return back()->with('success', 'Thêm vào giỏ hàng thành công!');
     }
-    public function cart()
+   
+    // Tìm kiếm sản phẩm
+    public function search(Request $request)
+    {
+        $keyword = trim($request->keyword);
+
+        if (!$keyword) {
+            return redirect()->back()->with('error', 'Vui lòng nhập từ khóa!');
+        }
+
+        $products = Product::where('status', 1)
+            ->where('name', 'like', "%$keyword%")
+            ->get();
+
+        return view('home.product', compact('products'));
+    }
+    // API tìm kiếm 
+    public function searchApi(Request $request)
+    {
+        $keyword = trim($request->keyword);
+
+        if (!$keyword) {
+            return response()->json([]);
+        }
+
+        $products = Product::where('status', 1)
+            ->where('name', 'like', "%$keyword%")
+            ->get();
+
+        return response()->json($products);
+    }
+
+
+    // 🔹 Xem phản hồi của user
+    public function myContact()
+    {
+        // ❗ Bạn đang dùng session('customer') chứ KHÔNG phải Auth
+
+        if (!session()->has('customer')) {
+            return redirect()->route('user.login.form')
+                ->with('error', 'Bạn cần đăng nhập!');
+        }
+
+        $customer = session('customer');
+
+        $contacts = Contact::where('customer_id', $customer['id'])
+            ->whereNotNull('reply') // reply
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('home.reply', compact('contacts'));
+    }
+
+    public function apiSubmitContact(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        // Lấy customer_id từ session
+        $customer = session('customer');
+
+        $contact = Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'status' => 0, // chưa đọc
+            'customer_id' => $customer['id'] ?? null, // nếu chưa login vẫn null
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Liên hệ của bạn đã gửi thành công!',
+            'data' => $contact
+        ], 201);
+    }
+
+    // 🔹 Lấy danh sách phản hồi admin cho user hiện tại (API)
+    public function apiGetReplies(Request $request)
+    {
+        $customer_id = $request->input('customer_id');
+
+        if (!$customer_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Vui lòng gửi customer_id!'
+            ], 401);
+        }
+
+        $contacts = Contact::where('customer_id', $customer_id)
+            ->whereNotNull('reply')
+            ->orderBy('replied_at', 'desc')
+            ->get(['subject','message','reply','replied_at']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $contacts
+        ]);
+    }
+
+
+    // giỏ hàng
+     public function cart()
     {
         $customer = session('customer');
 
@@ -400,131 +526,5 @@ class HomeController extends Controller
         return view('home.order_success', compact('order'));
     }
     
-    // Tìm kiếm sản phẩm
-    public function search(Request $request)
-    {
-        $keyword = trim($request->keyword);
-
-        if (!$keyword) {
-            return redirect()->back()->with('error', 'Vui lòng nhập từ khóa!');
-        }
-
-        $products = Product::where('status', 1)
-            ->where('name', 'like', "%$keyword%")
-            ->get();
-
-        return view('home.product', compact('products'));
-    }
-    // API tìm kiếm 
-    public function searchApi(Request $request)
-    {
-        $keyword = trim($request->keyword);
-
-        if (!$keyword) {
-            return response()->json([]);
-        }
-
-        $products = Product::where('status', 1)
-            ->where('name', 'like', "%$keyword%")
-            ->get();
-
-        return response()->json($products);
-    }
-    
-
-
-
-// API lấy sản phẩm theo category 
-public function apiProductsByCategory($id)
-{
-    $products = Product::where('category_id', $id)->get();
-
-    return response()->json([
-        'status' => true,
-        'data' => $products
-    ]);
 }
 
-
-public function apiCategory()
-{
-    $categories = Category::all();
-
-    return response()->json([
-        'status' => true,
-        'data' => $categories
-    ]);
-}
-
-
-    // 🔹 Xem phản hồi của user
-    public function myContact()
-    {
-        // ❗ Bạn đang dùng session('customer') chứ KHÔNG phải Auth
-
-        if (!session()->has('customer')) {
-            return redirect()->route('user.login.form')
-                ->with('error', 'Bạn cần đăng nhập!');
-        }
-
-        $customer = session('customer');
-
-        $contacts = Contact::where('customer_id', $customer['id'])
-            ->whereNotNull('reply') // reply
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return view('home.reply', compact('contacts'));
-    }
-
-    public function apiSubmitContact(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
-
-        // Lấy customer_id từ session
-        $customer = session('customer');
-
-        $contact = Contact::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'subject' => $request->subject,
-            'message' => $request->message,
-            'status' => 0, // chưa đọc
-            'customer_id' => $customer['id'] ?? null, // nếu chưa login vẫn null
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Liên hệ của bạn đã gửi thành công!',
-            'data' => $contact
-        ], 201);
-    }
-
-    // 🔹 Lấy danh sách phản hồi admin cho user hiện tại (API)
-    public function apiGetReplies(Request $request)
-    {
-        $customer_id = $request->input('customer_id');
-
-        if (!$customer_id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Vui lòng gửi customer_id!'
-            ], 401);
-        }
-
-        $contacts = Contact::where('customer_id', $customer_id)
-            ->whereNotNull('reply')
-            ->orderBy('replied_at', 'desc')
-            ->get(['subject','message','reply','replied_at']);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $contacts
-        ]);
-    }
-}

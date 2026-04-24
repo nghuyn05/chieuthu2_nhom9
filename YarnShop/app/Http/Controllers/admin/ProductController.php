@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Carts;
 use App\Models\Category;
-use App\Models\Comment;
 use App\Models\Product;
-use App\Models\Rating;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -16,8 +14,6 @@ class ProductController extends Controller
     public function __construct(){
         $this->middleware("auth");
         view()->share("products", Product::all());
-        view()->share("comments", Comment::all());
-        view()->share("ratings", Rating::all());
     }
     public function index(Request $request)
     {

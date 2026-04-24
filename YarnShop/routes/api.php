@@ -13,26 +13,26 @@ use App\Http\Controllers\admin\CartsController;
 use App\Http\Controllers\admin\AddressController;
 use App\Http\Controllers\admin\ContactController;
 use App\Http\Controllers\HomeController;
-
+use App\Models\Customer;
 
 Route::get('/users', function () {
 
-    $users = User::all();
+    $customer = Customer::all();
 
     return response()->json([
         "status" => "success",
-        "data" => $users
+        "data" =>  $customer
     ]);
 
 });
 
 Route::get('/users/{id}', function ($id) {
 
-    $user = User::find($id);
+    $customer = Customer::find($id);
 
     return response()->json([
         "status" => "success",
-        "data" => $user
+        "data" => $customer
     ]);
 
 });

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
-use App\Models\Adress;
 use App\Models\Comment;
 use App\Models\Customer;
 use App\Models\Rating;
@@ -15,20 +13,16 @@ class CustomerController extends Controller
     public function __construct(){
         $this->middleware("auth");
         $customers = Customer::all();
-        $addresses = Address::all();
         view()->share(['customers' => $customers]);
-        view()->share(['addresses'=> $addresses]);
 
     }
     public function index(){
         $customers = Customer::all();
-        $addresses = Address::all();
-        return view("admin.customer_management.customer_management-list",compact("customers","addresses"));
+        return view("admin.customer_management.customer_management-list",compact("customers"));
     }
     public function create(){
         $customers = Customer::all();
-        $addresses = Address::all();
-        return view("admin.customer_management.add",compact("customers","addresses"));   
+        return view("admin.customer_management.add",compact("customers"));   
     }
     public function store(Request $request){
         $customer = Customer::create(

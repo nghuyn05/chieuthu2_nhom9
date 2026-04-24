@@ -50,70 +50,62 @@ function myMap() {
 
 
 // ================= SEARCH =================
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const input = document.querySelector("#search-input");
     const resultBox = document.querySelector("#search-result");
 
-    // Không có input thì bỏ
-    if (!input || !resultBox) {
-        console.log("Search elements not found");
-        return;
-    }
+    if (!input || !resultBox) return;
 
-    console.log("Search ready");
+    let timeout = null;
 
-    // ================= GÕ =================
     input.addEventListener("keyup", function (e) {
 
         let keyword = this.value.trim();
 
-        // ===== ENTER → chuyển trang =====
+        // ENTER → chuyển trang
         if (e.key === "Enter") {
             if (!keyword) return;
-
             window.location.href = `/product?keyword=${encodeURIComponent(keyword)}`;
             return;
         }
 
-        // ===== RỖNG → clear =====
+        // rỗng → clear
         if (!keyword) {
             resultBox.innerHTML = "";
+            resultBox.style.display = "none";
             return;
         }
 
-        // ===== GỌI API =====
-        fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
-            .then(res => res.json())
-            .then(data => {
+        clearTimeout(timeout);
 
-                let html = "";
+        timeout = setTimeout(() => {
+            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
 
-                if (!data || data.length === 0) {
-                    html = `<div style="padding:8px;">Không tìm thấy</div>`;
-                } else {
-                    data.forEach(product => {
-                        html += `
-                            <div style="
-                                padding:8px;
-                                border-bottom:1px solid #eee;
-                                cursor:pointer;
-                            ">
-                                ${product.name}
-                            </div>
-                        `;
-                    });
-                }
+                    if (!data || data.length === 0) {
+                        resultBox.innerHTML = `<div style="padding:8px;">Không tìm thấy</div>`;
+                    } else {
+                        resultBox.innerHTML = data.map(item => `
+                            <a href="/product/${item.id}" class="search-item">
+                                ${item.name}
+                            </a>
+                        `).join("");
+                    }
 
-                resultBox.style.display = "block";
-                resultBox.innerHTML = data.map(item => `
-                    <a href="/product/${item.id}" class="search-item">${item.name}
-                    </a>
-                    `).join("");
-            })
-            .catch(err => {
-                console.error("Search error:", err);
-            });
+                    resultBox.style.display = "block";
+                })
+                .catch(err => console.error("Search error:", err));
+        }, 300);
+    });
+
+    // click ngoài → ẩn dropdown
+    document.addEventListener("click", function (e) {
+        if (!input.contains(e.target) && !resultBox.contains(e.target)) {
+            resultBox.style.display = "none";
+        }
     });
 
 });

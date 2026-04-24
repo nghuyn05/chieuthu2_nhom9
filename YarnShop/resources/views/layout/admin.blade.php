@@ -50,12 +50,6 @@
                         <a href="{{ route('admin.customer_management.index') }}"> Customer management</a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.order_management.index') }}"> Order management</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.about.index') }}"> About Yarn</a>
-                    </li>
-                    <li>
                         <a href="{{ route('admin.contact.index') }}"> Contact</a>
                     </li>
                 </ul>
@@ -146,7 +140,7 @@
                     <a class="dropdown-item small" href="#">View all alerts</a>
                 </div>
             </li>
-            <li class="nav-item">
+            <!--<li class="nav-item">
                 <form class="form-inline my-2 my-lg-0 mr-lg-2">
                     <div class="input-group">
                         <input class="form-control" type="text" placeholder="Search for...">
@@ -157,7 +151,7 @@
               </span>
                     </div>
                 </form>
-            </li>
+            </li>-->
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}">
                     <i class="fa fa-fw fa-sign-out"></i>{{ __('Logout') }}

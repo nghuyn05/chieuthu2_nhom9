@@ -32,7 +32,6 @@ Route::get('/search', [HomeController::class, 'search'])->name('product.search')
 
 Route::get('/category_product/{category}', [App\Http\Controllers\HomeController::class,'category_product'])->name('category_product');
 Route::get('/category_product/single_product/{category}', [App\Http\Controllers\HomeController::class,'single_product'])->name('single_product');
-Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 
 // ===== ✅ CONTACT (ĐÃ SỬA) =====
@@ -50,6 +49,8 @@ Route::get('/home/reply', [HomeController::class, 'myContact'])->name('home.repl
 
 Route::get('/product', [App\Http\Controllers\HomeController::class,'product'])->name('product');
 Route::get('/product/{id}', [App\Http\Controllers\HomeController::class,'single_product'])->name('product.show');
+
+
 Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
 Route::get('/cart/add/{id}', [HomeController::class, 'addToCart'])->name('cart.add');
 Route::get('/add-to-cart/{id}', [HomeController::class, 'addToCart'])->name('cart.add');
@@ -57,7 +58,6 @@ Route::delete('/cart/remove/{id}', [HomeController::class, 'removeFromCart'])->n
 Route::put('/cart/update/{id}', [HomeController::class, 'updateCart'])->name('cart.update');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [HomeController::class, 'processCheckout'])->name('checkout.process');
-
 Route::get('/my-order/{id}', [HomeController::class, 'myOrder'])->name('order.view');
 
 
@@ -66,13 +66,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.','middleware' => 'auth:admin'
     Route::resource('dashboard', AdminController::class);
     Route::resource('category',CategoryController::class);
     Route::resource('products_management',ProductController::class);
-    Route::resource('comment',CommentController::class);
     Route::resource('customer_management',CustomerController::class);
-    Route::resource('rating',RatingController::class);
-    Route::resource('address',AddressController::class);
-    Route::resource('order_management',OrderController::class);
-    Route::resource('carts',CartsController::class);
-    Route::resource('about',AboutController::class);
     Route::resource('contact',ContactController::class);
     Route::get('contact/{id}/reply', [ContactController::class, 'reply'])->name('contact.reply');
     Route::post('contact/{id}/reply', [ContactController::class, 'sendReply'])->name('contact.sendReply');
